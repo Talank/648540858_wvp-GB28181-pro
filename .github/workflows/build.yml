@@ -1,10 +1,7 @@
 name: release-ubuntu
 
 on:
-  push:
-    tags:
-      - "v*.*.*" # 触发条件是推送标签 如git tag v2.7.4 git push origin v2.7.4
-
+  workflow_dispatch:
 jobs:
   build-ubuntu:
     runs-on: ubuntu-latest
@@ -56,7 +53,7 @@ jobs:
           cp -r ./src/main/resources/static release/  # 复制前端文件
           cp ./target/*.jar release/     # 复制 JAR 文件
           cp ./src/main/resources/application-dev.yml release/application.yml
-          
+
           BRANCH=${{ github.event.base_ref }}
           BRANCH_NAME=$(echo "$BRANCH" | grep -oP 'refs/heads/\K.*')
           echo "BRANCH_NAME= ${BRANCH_NAME}"
@@ -64,7 +61,7 @@ jobs:
           if [[ -z "BRANCH_NAME" ]]; then
             BRANCH_NAME="${{ github.event.repository.default_branch }}"
           fi
-          
+
           TAG_NAME="${GITHUB_REF#refs/tags/}"
           ZIP_FILE_NAME="${BRANCH_NAME}-${TAG_NAME}.zip"
           zip -r "$ZIP_FILE_NAME" release
